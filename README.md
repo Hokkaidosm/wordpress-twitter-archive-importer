@@ -1,2 +1,4 @@
-# wordpress-twitter-archive-importer
+# Twitter Archive Importer
 TwitterアーカイブをWordPressに取り込むプラグイン
+
+Under development...
