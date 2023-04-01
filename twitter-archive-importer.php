@@ -20,18 +20,18 @@ class TwitterArchiveImporter
     {
         add_action("admin_menu", function () {
             add_menu_page(
-                "twitter_archive_importer",
+                __("Twitter Archive Importer", "twitter-archive-importer"),
                 __("Twitter Archive Importer", "twitter-archive-importer"),
                 "manage_options",
                 plugin_dir_path(__FILE__) . "admin/index.php",
                 null,
-                plugin_dir_url(__FILE__) . "images/icon_twitter_archive_importer.png",
+                "dashicons-twitter",
                 20
             );
 
             add_submenu_page(
                 plugin_dir_path(__FILE__) . "admin/index.php",
-                "twitter_archive_importer_import",
+                __("Import Twitter Archive", "twitter-archive-importer"),
                 __("Import", "twitter-archive-importer"),
                 "manage_options",
                 plugin_dir_path(__FILE__) . "admin/import.php",
@@ -41,13 +41,11 @@ class TwitterArchiveImporter
 
             add_submenu_page(
                 plugin_dir_path(__FILE__) . "admin/index.php",
-                "twitter_archive_importer_setting",
+                __("Twitter Archive Importer Setting", "twitter-archive-importer"),
                 __("Setting", "twitter-archive-importer"),
                 "manage_options",
-                "setting",
-                function () {
-                    require_once(plugin_dir_path(__FILE__) . "admin/settings.php");
-                },
+                plugin_dir_path(__FILE__) . "admin/settings.php",
+                null,
                 30
             );
         });
@@ -110,8 +108,8 @@ class TwitterArchiveImporter
     {
         var_dump($input);
         $sanitary_values = [];
-        if (isset($input[TwitterArchiveImporterOptionName::categoryId])) {
-            $sanitary_values[TwitterArchiveImporterOptionName::categoryId] = $input[TwitterArchiveImporterOptionName::categoryId];
+        if (isset($input[TwitterArchiveImporterOptionName::categoryId]) && is_numeric($input[TwitterArchiveImporterOptionName::categoryId])) {
+            $sanitary_values[TwitterArchiveImporterOptionName::categoryId] = intval($input[TwitterArchiveImporterOptionName::categoryId]);
         }
         return $sanitary_values;
     }
@@ -122,8 +120,9 @@ class TwitterArchiveImporter
         wp_dropdown_categories([
             "orderby" => "id",
             "hide_empty" => false,
-            "name" => TwitterArchiveImporterOptionName::categoryId,
-            "selected" => $this->getCategoryId()
+            "name" => TwitterArchiveImporterOptionName::optionName . "[" . TwitterArchiveImporterOptionName::categoryId . "]",
+            "selected" => $this->getCategoryId(),
+            "required" => true
         ]);
     }
 }
