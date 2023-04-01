@@ -7,6 +7,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 ?>
 <div class="wrap">
     <h1><?= __("Twitter Archive Importer Settings", "twitter-archive-importer") ?></h1>
+    <?php settings_errors(); ?>
     <form method="POST" action="options.php">
         <?php settings_fields(TwitterArchiveImporterOptionName::optionGroupName) ?>
         <?php do_settings_sections(TwitterArchiveImporterOptionName::optionAdminPage) ?>
