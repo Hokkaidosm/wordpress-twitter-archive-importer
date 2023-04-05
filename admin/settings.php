@@ -1,5 +1,5 @@
 <div class="wrap">
-    <h1><?= __("Twitter Archive Importer Settings", "twitter-archive-importer") ?></h1>
+    <h1><?= esc_html__("Twitter Archive Importer Settings", "twitter-archive-importer") ?></h1>
     <?php settings_errors(); ?>
     <form method="POST" action="options.php">
         <?php settings_fields(TwitterArchiveImporterConsts::optionGroupName) ?>

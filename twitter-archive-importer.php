@@ -1,16 +1,22 @@
 <?php
 /*
 Plugin Name: Twitter Archive Importer
-Description: TwitterアーカイブをWordPressに取り込むプラグイン
+Plugin URI: https://github.com/Hokkaidosm/wordpress-twitter-archive-importer/
+Description: This plugin provides a function for import Twitter archive file.
 Version: 0.1
 Author: Hokkaidosm
 Author URI: https://hokkaidosm.net
 Licence: MIT License
 Licence URI: https://spdx.org/licenses/MIT.html
 Text Domain: twitter-archive-importer
+Domain Path: /languages
  */
 
 require_once(plugin_dir_path(__FILE__) . "constants.php");
+
+add_action("init", function () {
+    load_plugin_textdomain("twitter-archive-importer", false, dirname(plugin_basename(__FILE__)) . "/languages");
+});
 
 class TwitterArchiveImporter
 {
@@ -25,6 +31,7 @@ class TwitterArchiveImporter
     {
         /** @var WP_Database $wpdb */
         global $wpdb;
+        load_plugin_textdomain("twitter-archive-importer", false, dirname(plugin_basename(__FILE__)) . "/languages");
 
         add_action("admin_menu", function () {
             add_menu_page(
@@ -78,9 +85,19 @@ class TwitterArchiveImporter
 
             add_settings_field(
                 TwitterArchiveImporterConsts::categoryId,
-                __("Category"),
+                __("Category", "twitter-archive-importer"),
                 function () {
                     $this->category_callback();
+                },
+                TwitterArchiveImporterConsts::optionAdminPage,
+                TwitterArchiveImporterConsts::optionSectionName
+            );
+
+            add_settings_field(
+                TwitterArchiveImporterConsts::postTitleTemplate,
+                __("Post title template", "twitter-archive-importer"),
+                function () {
+                    $this->post_title_template_callback();
                 },
                 TwitterArchiveImporterConsts::optionAdminPage,
                 TwitterArchiveImporterConsts::optionSectionName
@@ -119,13 +136,13 @@ class TwitterArchiveImporter
             $update = true;
         }
 
-        if (!isset($this->options[TwitterArchiveImporterConsts::processedIds])) {
-            $this->options[TwitterArchiveImporterConsts::processedIds] = [];
-            $update = true;
-        }
-
-        if (!isset($this->options[TwitterArchiveImporterConsts::postIds])) {
-            $this->options[TwitterArchiveImporterConsts::postIds] = [];
+        if (!isset($this->options[TwitterArchiveImporterConsts::postTitleTemplate])) {
+            // 投稿タイトルテンプレート初期値設定
+            $this->options[TwitterArchiveImporterConsts::postTitleTemplate] = __(
+                /* translators: This is the default post title template. 1: username, 2: date */
+                '%1$s\'s Twitter log of %2$s',
+                "twitter-archive-importer"
+            );
             $update = true;
         }
 
@@ -140,11 +157,20 @@ class TwitterArchiveImporter
         return $this->options[TwitterArchiveImporterConsts::categoryId];
     }
 
+    /** 投稿タイトルテンプレートを返す */
+    public function getPostTitleTemplate(): string
+    {
+        return $this->options[TwitterArchiveImporterConsts::postTitleTemplate];
+    }
+
     public function sanitize($input): array
     {
         $sanitary_values = [];
         if (isset($input[TwitterArchiveImporterConsts::categoryId]) && is_numeric($input[TwitterArchiveImporterConsts::categoryId])) {
             $sanitary_values[TwitterArchiveImporterConsts::categoryId] = intval($input[TwitterArchiveImporterConsts::categoryId]);
+        }
+        if (isset($input[TwitterArchiveImporterConsts::postTitleTemplate])) {
+            $sanitary_values[TwitterArchiveImporterConsts::postTitleTemplate] = $input[TwitterArchiveImporterConsts::postTitleTemplate];
         }
         return $sanitary_values;
     }
@@ -158,6 +184,19 @@ class TwitterArchiveImporter
             "selected" => $this->getCategoryId(),
             "required" => true
         ]);
+    }
+
+    public function post_title_template_callback()
+    {
+        $name = TwitterArchiveImporterConsts::optionName . "[" . TwitterArchiveImporterConsts::postTitleTemplate . "]";
+?>
+        <input type="text" name="<?= $name ?>" value="<?= esc_attr($this->getPostTitleTemplate()) ?>" required><br />
+        <?= __(
+            /* translators: This message is a description of the "Post title template". It explains that %1$s is replaced by the Twitter username, and %2$s by the date. */
+            '"%1$s" replaces to user name of Twitter, "%2$s" replaces to date.',
+            "twitter-archive-importer"
+        ) ?>
+<?php
     }
 
     /**
@@ -271,6 +310,16 @@ class TwitterArchiveImporter
             dbDelta($createProcessedIdTableSql . PHP_EOL . $createPostIdsTableSql);
             update_option(TwitterArchiveImporterConsts::dbVersionOptionName, $dbVersion);
         }
+    }
+
+    public function getProcessedIdsTableName(): string
+    {
+        return $this->processedIdsTableName;
+    }
+
+    public function getPostIdsTableName(): string
+    {
+        return $this->postIdsTableName;
     }
 }
 

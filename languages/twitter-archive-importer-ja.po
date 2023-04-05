@@ -1,0 +1,251 @@
+# Copyright (C) 2023 Hokkaidosm
+# This file is distributed under the same license as the Twitter Archive Importer plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Twitter Archive Importer 0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wordpress-twitter-"
+"archive-importer\n"
+"POT-Creation-Date: 2023-04-05T12:15:37+02:00\n"
+"PO-Revision-Date: 2023-04-05 19:18+0900\n"
+"Last-Translator: Hokkaidosm\n"
+"Language-Team: \n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.4\n"
+"X-Domain: twitter-archive-importer\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. Plugin Name of the plugin
+#: admin/index.php:24 twitter-archive-importer.php:38
+#: twitter-archive-importer.php:39
+msgid "Twitter Archive Importer"
+msgstr "Twitter Archive Importer"
+
+#. Plugin URI of the plugin
+msgid "https://github.com/Hokkaidosm/wordpress-twitter-archive-importer/"
+msgstr "https://github.com/Hokkaidosm/wordpress-twitter-archive-importer/"
+
+#. Description of the plugin
+#: admin/index.php:26
+msgid "This plugin provides a function for import Twitter archive file."
+msgstr "Twitterアーカイブファイルをインポートするプラグイン。"
+
+#. Author of the plugin
+msgid "Hokkaidosm"
+msgstr "Hokkaidosm"
+
+#. Author URI of the plugin
+msgid "https://hokkaidosm.net"
+msgstr "https://hokkaidosm.net"
+
+#: admin/import.php:71 twitter-archive-importer.php:49
+msgid "Import Twitter Archive"
+msgstr "Twitterアーカイブのインポート"
+
+#: admin/import.php:80
+msgid "Import Result"
+msgstr "インポート結果"
+
+#: admin/import.php:83
+msgid "Import finished successful."
+msgstr "インポートが正常に終了しました。"
+
+#: admin/import.php:85
+msgid "Import failed, please see log following:"
+msgstr "インポートに失敗しました。詳細は下記のログをご覧ください。"
+
+#. translators: %s replaces to filename
+#: admin/import.php:91
+msgid "Would you like to delete \"%s\"?"
+msgstr "ファイル「%s」を削除しますか？"
+
+#: admin/import.php:114
+msgid "Return to select file page"
+msgstr "ファイル選択画面に戻る"
+
+#. translators: %s replaces to filename
+#: admin/import.php:124
+msgid "Deleted \"%s\"."
+msgstr "ファイル「%s」を削除しました。"
+
+#. translators: %s replaces to filename
+#: admin/import.php:130
+msgid "Failed to delete \"%s\"."
+msgstr "ファイル「%s」の削除に失敗しました。"
+
+#: admin/import.php:219
+msgid "Archive file is not found."
+msgstr "アーカイブファイルが見つかりません。"
+
+#. translators: %s replaces to upload path
+#: admin/import.php:220
+msgid "Please upload archive file to : \"%s\"."
+msgstr "アーカイブファイルを「%s」にアップロードしてください。"
+
+#: admin/import.php:229
+msgid "Select archive file to import: "
+msgstr "インポートするアーカイブを選択："
+
+#: admin/import.php:239 twitter-archive-importer.php:50
+msgid "Import"
+msgstr "インポート"
+
+#. translators: %s replaces to specified file name
+#: admin/import.php:255
+msgid "\"%s\" is not found."
+msgstr "ファイル「%s」が見つかりません。"
+
+#: admin/import.php:266
+msgid "Selected category is not found."
+msgstr "選択されたカテゴリが見つかりません。"
+
+#: admin/import.php:274
+msgid "Extract folder cannot make."
+msgstr "アーカイブ解凍先のフォルダの作成に失敗しました。"
+
+#: admin/import.php:278
+msgid "Extract folder is exist."
+msgstr "アーカイブ解凍先のフォルダがすでにあります。"
+
+#: admin/import.php:283
+msgid "Extract archive failed."
+msgstr "アーカイブの解凍に失敗しました。"
+
+#. translators: %s replaces to file name.
+#: admin/import.php:291
+msgid ""
+"Necessary file \"%s\" is not found. Please check it is the correct archive "
+"file."
+msgstr ""
+"必須ファイル「%s」が見つかりません。正しいアーカイブファイルか確認してくださ"
+"い。"
+
+#: admin/import.php:302
+msgid "Delete of unused files failed."
+msgstr "不要ファイルの削除に失敗しました。"
+
+#: admin/import.php:309 admin/import.php:316
+msgid "Loading account data (accounts.js) failed."
+msgstr "アカウントデータ (accounts.js) の読み込みに失敗しました。"
+
+#. translators: %s replaces to file name
+#: admin/import.php:325 admin/import.php:335 admin/import.php:354
+#: admin/import.php:364
+msgid "Loading tweet data (%s) failed."
+msgstr "ツイートデータ (%s) の読み込みに失敗しました。"
+
+#: admin/import.php:345
+msgid "Loading data directory failed."
+msgstr "データフォルダの読み込みに失敗しました。"
+
+#. translators: %s replaced target date
+#: admin/import.php:467
+msgid "Create post of %s failed. (Get tweet)"
+msgstr "%sの投稿の作成に失敗しました（ツイート取得）。"
+
+#. translators: %s replaced target date
+#: admin/import.php:494
+msgid "Create post of %s failed. (Post)"
+msgstr "%sの投稿の作成に失敗しました（投稿作成）。"
+
+#. translators: %s replaced target date
+#: admin/import.php:505
+msgid "Create post of %s successed."
+msgstr "%sの投稿の作成に成功しました。"
+
+#: admin/import.php:513
+msgid "check post"
+msgstr "投稿を確認する"
+
+#: admin/index.php:25
+msgid "Welcome to Twitter Archive Importer!"
+msgstr "Twitter Archive Importerへようこそ！"
+
+#: admin/index.php:27
+msgid "Operation Procedure"
+msgstr "操作手順"
+
+#. translators: This url is Twitter's help page: "How to download your Twitter archive"
+#: admin/index.php:30
+msgid ""
+"https://help.twitter.com/en/managing-your-account/how-to-download-your-"
+"twitter-archive"
+msgstr ""
+"https://help.twitter.com/ja/managing-your-account/how-to-download-your-"
+"twitter-archive"
+
+#: admin/index.php:34
+msgid "Download yout Twitter's archive."
+msgstr "Twitterアーカイブをダウンロードします。"
+
+#. translators: %s replaces to upload path
+#: admin/index.php:37
+msgid "Upload your archive file to \"%s\"."
+msgstr "アーカイブファイルを「%s」にアップロードします。"
+
+#: admin/index.php:44
+msgid "Go to \"Import\" menu, and select the archive file."
+msgstr "｢インポート｣メニューを開き、アーカイブファイルを選択します。"
+
+#: admin/index.php:47
+msgid "Then click \"Import\" button, and wait a while."
+msgstr "その後、「インポート」ボタンをクリックし、しばらくお待ちください。"
+
+#: admin/index.php:48
+msgid ""
+"Note: The time it takes to import depends on the number of tweets since the "
+"last import. The first import in particular can take a significant amount of "
+"time."
+msgstr ""
+"※インポートにかかる時間は、前回のインポートからのツイート件数により変わりま"
+"す。特に、初回のインポート時にはかなり時間がかかります。"
+
+#: admin/index.php:51
+msgid "Contributions"
+msgstr "貢献"
+
+#. translators: This message is output in HTML without escaping.
+#: admin/index.php:53
+msgid ""
+"This plugin welcomes contributions on <a href=\"https://github.com/"
+"Hokkaidosm/wordpress-twitter-archive-importer/\" target=\"_blank\">GitHub</"
+"a>."
+msgstr ""
+"このプラグインは<a href=\"https://github.com/Hokkaidosm/wordpress-twitter-"
+"archive-importer/\" target=\"_blank\">GitHub</a>での貢献を受け付けています。"
+
+#: admin/settings.php:2
+msgid "Twitter Archive Importer Settings"
+msgstr "Twitter Archive Importerの設定"
+
+#: admin/settings.php:7
+msgid "Save Settings"
+msgstr "設定を保存"
+
+#: twitter-archive-importer.php:59
+msgid "Twitter Archive Importer Setting"
+msgstr "Twitter Archive Importerの設定"
+
+#: twitter-archive-importer.php:60 twitter-archive-importer.php:80
+msgid "Setting"
+msgstr "設定"
+
+#: twitter-archive-importer.php:88
+msgid "Category"
+msgstr "カテゴリ"
+
+#: twitter-archive-importer.php:98
+msgid "Post title template"
+msgstr "投稿タイトルテンプレート"
+
+#. translators: This is the default post title template. 1: username, 2: date
+#: twitter-archive-importer.php:141
+msgid "%1$s's Twitter log of %2$s"
+msgstr "%1$sの%2$sのツイートログ"
+
+#. translators: This message is a description of the "Post title template". It explains that %1$s is replaced by the Twitter username, and %2$s by the date.
+#: twitter-archive-importer.php:194
+msgid "\"%1$s\" replaces to user name of Twitter, \"%2$s\" replaces to date."
+msgstr "\"%1$s\" はTwitterのユーザ名に、 \"%2$s\" は日付に置き換えられます。"

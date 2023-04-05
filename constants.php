@@ -13,6 +13,9 @@ class TwitterArchiveImporterConsts
     /** カテゴリID */
     const categoryId = "categoryId";
 
+    /** 記事名テンプレート */
+    const postTitleTemplate = "postTitleTemplate";
+
     /** アップロード先フォルダ名 */
     const uploadDirName = "upload";
 

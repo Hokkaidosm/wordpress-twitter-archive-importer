@@ -45,6 +45,10 @@ $processStep = ProcessStep::SelectFile;
 const fileNameFieldName = "fileName";
 /** 現在のステップのフィールド名 */
 const currentStepFieldName = "currentStep";
+/** 削除ボタンname */
+const deleteButtonName = "delete";
+/** 非削除ボタンname */
+const nonDeleteButtonName = "nonDelete";
 
 if ('POST' === $_SERVER['REQUEST_METHOD']) {
     check_admin_referer("import");
@@ -55,6 +59,9 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
         case ProcessStep::Imported->name:
             $processStep = ProcessStep::Deleted;
             break;
+        case ProcessStep::Deleted->name:
+            $processStep = ProcessStep::SelectFile;
+            break;
         default:
             die;
     }
@@ -64,36 +71,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
     <h1><?= esc_html__("Import Twitter Archive", "twitter-archive-importer") ?></h1>
     <?php
     if ($processStep == ProcessStep::SelectFile) :
-        $file_list = $wp_filesystem->dirlist($upload_dir);
-        $file_list = array_filter($file_list, function ($file_name) {
-            return strtolower(pathinfo($file_name, PATHINFO_EXTENSION)) === "zip";
-        }, ARRAY_FILTER_USE_KEY);
-        if (empty($file_list)) :
-    ?>
-            <p><?= esc_html__("Archive file is not found.", "twitter-archive-importer") ?></p>
-            <p><?= esc_html(sprintf(__(
-                    /* translators: %s replaces to upload path */
-                    "Please upload archive file to : \"%s\".",
-                    "twitter-archive-importer"
-                ), $upload_dir)) ?></p>
-        <?php
-        else :
-        ?>
-            <form method="POST">
-                <p><?= esc_html__("Select archive file to import: ", "twitter-archive-importer") ?></p>
-                <p>
-                    <select name="<?= fileNameFieldName ?>" required size="<?= count($file_list) ?>">
-                        <?php foreach ($file_list as $file) : ?>
-                            <option><?= htmlspecialchars($file["name"]) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </p>
-                <input type="hidden" name="<?= currentStepFieldName ?>" value="<?= $processStep->name ?>">
-                <?php wp_nonce_field("import") ?>
-                <?= submit_button(__("Import", "twitter-archive-importer")) ?>
-            </form>
-        <?php endif; ?>
-    <?php
+        selectFilePage();
     elseif ($processStep == ProcessStep::Imported) :
         $fileName = sanitize_file_name($_POST[fileNameFieldName]);
         $fileDir = $upload_dir . $fileName;
@@ -107,9 +85,58 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
                 <?= esc_html__("Import failed, please see log following:", "twitter-archive-importer") ?>
             <?php endif; ?>
         </p>
+        <?php if ($result->isSuccess()) : ?>
+            <form method="POST">
+                <p>
+                    <?= esc_html(sprintf(__(
+                        /* translators: %s replaces to filename */
+                        "Would you like to delete \"%s\"?",
+                        "twitter-archive-importer"
+                    ), $fileName)) ?>
+                </p>
+                <p>
+                    <input type="hidden" name="<?= fileNameFieldName ?>" value="<?= esc_attr($fileName) ?>">
+                    <input type="hidden" name="<?= currentStepFieldName ?>" value="<?= $processStep->name ?>">
+                    <?php wp_nonce_field("import") ?>
+                    <?php submit_button(__("Yes"), "delete", deleteButtonName, false) ?>&nbsp;
+                    <?php submit_button(__("No"), "secondary", nonDeleteButtonName, false) ?>
+                </p>
+            </form>
+        <?php endif; ?>
         <?php foreach ($result->getLog() as $log) : ?>
             <p><?= $log ?></p>
         <?php endforeach; ?>
+        <?php if (!$result->isSuccess()) : ?>
+            <form method="POST">
+                <p>
+                    <input type="hidden" name="<?= currentStepFieldName ?>" value="<?= $processStep->name ?>">
+                    <?php wp_nonce_field("import") ?>
+                    <?php submit_button(__("Return to select file page", "twitter-archive-importer"), "primary", "", false) ?>
+                </p>
+            </form>
+        <?php endif; ?>
+    <?php
+    elseif ($processStep == ProcessStep::Deleted) :
+        if (isset($_POST[deleteButtonName])) {
+            $fileName = sanitize_file_name($_POST[fileNameFieldName]);
+            $fileDir = $upload_dir . $fileName;
+            if ($wp_filesystem->delete($fileDir)) {
+                add_settings_error("twitter-archive-importer", "delete_file_status", sprintf(__(
+                    /* translators: %s replaces to filename */
+                    "Deleted \"%s\".",
+                    "twitter-archive-importer"
+                ), $fileName), "success");
+            } else {
+                add_settings_error("twitter-archive-importer", "delete_file_status", sprintf(__(
+                    /* translators: %s replaces to filename */
+                    "Failed to delete \"%s\".",
+                    "twitter-archive-importer"
+                ), $fileName), "error");
+            }
+        }
+        $processStep = ProcessStep::SelectFile;
+        selectFilePage();
+    ?>
     <?php
     endif;
     ?>
@@ -175,6 +202,45 @@ class TwitterArchiveImporterImportResult
     }
 }
 
+function selectFilePage()
+{
+    /**
+     * @var WP_Filesystem_Base $wp_filesystem
+     */
+    global $wp_filesystem, $upload_dir, $processStep;
+    settings_errors();
+
+    $file_list = $wp_filesystem->dirlist($upload_dir);
+    $file_list = array_filter($file_list, function ($file_name) {
+        return strtolower(pathinfo($file_name, PATHINFO_EXTENSION)) === "zip";
+    }, ARRAY_FILTER_USE_KEY);
+    if (empty($file_list)) :
+?>
+        <p><?= esc_html__("Archive file is not found.", "twitter-archive-importer") ?></p>
+        <p><?= esc_html(sprintf(__(
+                /* translators: %s replaces to upload path */
+                "Please upload archive file to : \"%s\".",
+                "twitter-archive-importer"
+            ), $upload_dir)) ?></p>
+    <?php
+    else :
+    ?>
+        <form method="POST">
+            <p><?= esc_html__("Select archive file to import: ", "twitter-archive-importer") ?></p>
+            <p>
+                <select name="<?= fileNameFieldName ?>" required size="<?= count($file_list) ?>">
+                    <?php foreach ($file_list as $file) : ?>
+                        <option><?= htmlspecialchars($file["name"]) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </p>
+            <input type="hidden" name="<?= currentStepFieldName ?>" value="<?= $processStep->name ?>">
+            <?php wp_nonce_field("import") ?>
+            <?php submit_button(__("Import", "twitter-archive-importer")) ?>
+        </form>
+<?php endif;
+}
+
 function importArchive($fileDir): TwitterArchiveImporterImportResult
 {
     /**
@@ -218,6 +284,19 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
             return $result;
         }
 
+        // 必要なファイルがあるか確認する
+        $necessaryFiles = ["data/account.js", "data/tweet-headers.js"];
+        foreach ($necessaryFiles as $file) {
+            if (!$wp_filesystem->exists($extract_to . $file)) {
+                $result->putLog(sprintf(__(
+                    /* translators: %s replaces to file name. */
+                    "Necessary file \"%s\" is not found. Please check it is the correct archive file.",
+                    "twitter-archive-importer"
+                ), $file));
+                return $result;
+            }
+        }
+
         // 不要ファイルを削除する
         if (!deleteUnusedFile($extract_to)) {
             $result->putLog(esc_html__("Delete of unused files failed.", "twitter-archive-importer"));
@@ -244,7 +323,7 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
         $tweetHeadersJs = $wp_filesystem->get_contents($extract_to . "data/tweet-headers.js");
         if (false === $tweetHeadersJs) {
             $result->putLog(esc_html(sprintf(__(
-                /* translators: %s replaces file name */
+                /* translators: %s replaces to file name */
                 "Loading tweet data (%s) failed.",
                 "twitter-archive-importer"
             ), "tweet-headers.js")));
@@ -254,7 +333,7 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
         $tweetHeaders = json_decode($tweetHeadersJs);
         if (is_null($tweetHeaders)) {
             $result->putLog(esc_html(sprintf(__(
-                /* translators: %s replaces file name */
+                /* translators: %s replaces to file name */
                 "Loading tweet data (%s) failed.",
                 "twitter-archive-importer"
             ), "tweet-headers.js")));
@@ -273,7 +352,7 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
             $js = $wp_filesystem->get_contents($extract_to . "data/" . $file["name"]);
             if (false === $js) {
                 $result->putLog(esc_html(sprintf(__(
-                    /* translators: %s replaces file name */
+                    /* translators: %s replaces to file name */
                     "Loading tweet data (%s) failed.",
                     "twitter-archive-importer"
                 ), $file["name"])));
@@ -283,7 +362,7 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
             $data = json_decode($js);
             if (is_null($data)) {
                 $result->putLog(esc_html(sprintf(__(
-                    /* translators: %s replaces file name */
+                    /* translators: %s replaces to file name */
                     "Loading tweet data (%s) failed.",
                     "twitter-archive-importer"
                 ), $file["name"])));
@@ -310,9 +389,6 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
 
         // 処理していないツイートだけに絞る
         $processedId = $twitterArchiveImporter->getProcessedId($accountId);
-        if ($processedId == 0) {
-            $processedId = 1639782903533174785;
-        }
         $tweetHeaders = array_filter($tweetHeaders, function ($tweet) use ($processedId) {
             return $tweet->id > $processedId;
         });
@@ -402,11 +478,7 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
             $postParams["post_content"] = $currentBody;
             if (is_null($postId)) {
                 $postParams["post_date"] = $dateTime->format("Y-m-d H:i:s");
-                $postTitle = sprintf(__(
-                    /* translators: 1: username, 2: date */
-                    '%1$s\'s Twitter log of %2$s',
-                    "twitter-archive-importer"
-                ), $username, $dateTime->format(get_option("date_format")));
+                $postTitle = sprintf($twitterArchiveImporter->getPostTitleTemplate(), $username, $dateTime->format(get_option("date_format")));
                 $postParams["post_title"] = $postTitle;
                 $postParams["post_name"] = $username . "-twitter-log-" . $dateTime->format("Y-m-d");
                 $postParams["post_category"] = [$twitterArchiveImporter->getCategoryId()];
