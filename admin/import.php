@@ -265,6 +265,7 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
      * @var TwitterArchiveImporter $twitterArchiveImporter
      */
     global $wp_filesystem, $twitterArchiveImporter;
+    set_time_limit(1200);
     /** @var TwitterArchiveImporterImportResult $result 結果 */
     $result = new TwitterArchiveImporterImportResult();
 
@@ -335,6 +336,15 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
         }
         $accountId = $account[0]->account->accountId;
         $username = $account[0]->account->username;
+        // account.jsはここまで
+        if (!$wp_filesystem->delete($extract_to . "data/account.js")) {
+            $result->putLog(esc_html(sprintf(__(
+                /* translators: %s replaces to file name */
+                "Failed to delete file \"%s\".",
+                "twitter-archive-importer"
+            ), "account.js")));
+            return $result;
+        }
 
         // tweet-headers.jsを読み込む
         $tweetHeadersJs = $wp_filesystem->get_contents($extract_to . "data/tweet-headers.js");
@@ -352,6 +362,15 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
             $result->putLog(esc_html(sprintf(__(
                 /* translators: %s replaces to file name */
                 "Loading tweet data (%s) failed.",
+                "twitter-archive-importer"
+            ), "tweet-headers.js")));
+            return $result;
+        }
+        // tweet-headers.jsはここまで
+        if (!$wp_filesystem->delete($extract_to . "data/tweet-headers.js")) {
+            $result->putLog(esc_html(sprintf(__(
+                /* translators: %s replaces to file name */
+                "Failed to delete file \"%s\".",
                 "twitter-archive-importer"
             ), "tweet-headers.js")));
             return $result;
@@ -381,6 +400,15 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
                 $result->putLog(esc_html(sprintf(__(
                     /* translators: %s replaces to file name */
                     "Loading tweet data (%s) failed.",
+                    "twitter-archive-importer"
+                ), $file["name"])));
+                return $result;
+            }
+            // ファイルはここまで
+            if (!$wp_filesystem->delete($extract_to . "data/" . $file["name"])) {
+                $result->putLog(esc_html(sprintf(__(
+                    /* translators: %s replaces to file name */
+                    "Failed to delete file \"%s\".",
                     "twitter-archive-importer"
                 ), $file["name"])));
                 return $result;
@@ -430,7 +458,7 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
 
         // 日付別処理
         foreach ($tweetsByDate as $date => $tweets) {
-            $dateTime = DateTimeImmutable::createFromFormat("Y-m-d", $date, wp_timezone());
+            $dateTime = DateTime::createFromFormat("Y-m-d", $date, wp_timezone())->setTime(0, 0, 0, 0);
             $postId = $twitterArchiveImporter->getPostId($accountId, $date);
             $currentBody = "";
             if (!is_null($postId)) {
@@ -463,7 +491,11 @@ function importArchive($fileDir): TwitterArchiveImporterImportResult
             $oembeds = getMultiContents($urlList);
             foreach ($oembeds as $oembedRes) {
                 if ($oembedRes["http_code"] !== 200) {
-                    // エラー発生時はここで処理終了
+                    if ($oembedRes["http_code"] === 403 || $oembedRes["http_code"] === 404) {
+                        // 403/404エラー時はスキップ
+                        continue;
+                    }
+                    // その他エラー発生時はここで処理終了
                     $hasError = true;
                     break;
                 }
