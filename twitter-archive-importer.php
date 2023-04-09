@@ -3,7 +3,7 @@
 Plugin Name: Twitter Archive Importer
 Plugin URI: https://github.com/Hokkaidosm/wordpress-twitter-archive-importer/
 Description: This plugin provides a function for import Twitter archive file.
-Version: 0.1
+Version: 0.2
 Author: Hokkaidosm
 Author URI: https://hokkaidosm.net
 Licence: GPL v3 or later
