@@ -45,18 +45,10 @@ if (!$wp_filesystem->exists($upload_dir)) {
 }
 
 /** ステップ */
-enum ProcessStep
-{
-    /** ファイル選択 */
-    case SelectFile;
-    /** インポート */
-    case Imported;
-    /** ファイル削除 */
-    case Deleted;
-}
+require_once(plugin_dir_path(__FILE__) . "../enums/ProcessStep.php");
 
-/** @var ProcessStep $processStep */
-$processStep = ProcessStep::SelectFile;
+/** @var \TwitterArchiveImporterEnums\ProcessStep $processStep */
+$processStep = \TwitterArchiveImporterEnums\ProcessStep::SelectFile();
 
 /** ファイル名のフィールド名 */
 const fileNameFieldName = "fileName";
@@ -70,14 +62,14 @@ const nonDeleteButtonName = "nonDelete";
 if ('POST' === $_SERVER['REQUEST_METHOD']) {
     check_admin_referer("import");
     switch ($_POST[currentStepFieldName]) {
-        case ProcessStep::SelectFile->name:
-            $processStep = ProcessStep::Imported;
+        case \TwitterArchiveImporterEnums\ProcessStep::SelectFile()->name:
+            $processStep = \TwitterArchiveImporterEnums\ProcessStep::Imported();
             break;
-        case ProcessStep::Imported->name:
-            $processStep = ProcessStep::Deleted;
+        case \TwitterArchiveImporterEnums\ProcessStep::Imported->name:
+            $processStep = \TwitterArchiveImporterEnums\ProcessStep::Deleted();
             break;
-        case ProcessStep::Deleted->name:
-            $processStep = ProcessStep::SelectFile;
+        case \TwitterArchiveImporterEnums\ProcessStep::Deleted->name:
+            $processStep = \TwitterArchiveImporterEnums\ProcessStep::SelectFile();
             break;
         default:
             die;
@@ -87,9 +79,9 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 <div class="wrap">
     <h1><?= esc_html__("Import Twitter Archive", "twitter-archive-importer") ?></h1>
     <?php
-    if ($processStep == ProcessStep::SelectFile) :
+    if ($processStep == \TwitterArchiveImporterEnums\ProcessStep::SelectFile()) :
         selectFilePage();
-    elseif ($processStep == ProcessStep::Imported) :
+    elseif ($processStep == \TwitterArchiveImporterEnums\ProcessStep::Imported()) :
         $fileName = sanitize_file_name($_POST[fileNameFieldName]);
         $fileDir = $upload_dir . $fileName;
         $result = importArchive($fileDir);
@@ -133,7 +125,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
             </form>
         <?php endif; ?>
     <?php
-    elseif ($processStep == ProcessStep::Deleted) :
+    elseif ($processStep == \TwitterArchiveImporterEnums\ProcessStep::Deleted()) :
         if (isset($_POST[deleteButtonName])) {
             $fileName = sanitize_file_name($_POST[fileNameFieldName]);
             $fileDir = $upload_dir . $fileName;
@@ -151,7 +143,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
                 ), $fileName), "error");
             }
         }
-        $processStep = ProcessStep::SelectFile;
+        $processStep = \TwitterArchiveImporterEnums\ProcessStep::SelectFile();
         selectFilePage();
     ?>
     <?php

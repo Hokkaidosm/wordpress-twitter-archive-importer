@@ -1,0 +1,17 @@
+{
+    "name": "hokkaidosm/wordpress-twitter-archive-importer",
+    "autoload": {
+        "psr-4": {
+            "Hokkaidosm\\WordpressTwitterArchiveImporter\\": "TwitterArchiveImporter/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Hokkaidosm",
+            "email": "64832302+Hokkaidosm@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "marc-mabe/enum-cl": "^1.0"
+    }
+}
