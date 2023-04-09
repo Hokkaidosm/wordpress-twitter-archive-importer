@@ -23,6 +23,12 @@ jobs:
         with:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           submodules: true
+      - name: Setup PHP
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "latest"
+      - name: Composer Install
+        uses: "ramsey/composer-install@v2"
       - name: Archive
         run: |
           zip -r ${{ steps.version.outputs.filename }}.zip ./ -x "*.gitignore" "*.git/*"
