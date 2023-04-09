@@ -47,8 +47,8 @@ if (!$wp_filesystem->exists($upload_dir)) {
 /** ステップ */
 require_once(plugin_dir_path(__FILE__) . "../enums/ProcessStep.php");
 
-/** @var \TwitterArchiveImporterEnums\ProcessStep:: $processStep */
-$processStep = \TwitterArchiveImporterEnums\ProcessStep::SelectFile;
+/** @var \TwitterArchiveImporterEnums\ProcessStep $processStep */
+$processStep = \TwitterArchiveImporterEnums\ProcessStep::SelectFile();
 
 /** ファイル名のフィールド名 */
 const fileNameFieldName = "fileName";
